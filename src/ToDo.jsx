@@ -1,4 +1,3 @@
-
 import "./style.css";
 import { useState } from "react";
 
@@ -33,25 +32,18 @@ const init = [
 export default function App() {
   const [todos, setTodos] = useState(init);
   const [text, setText] = useState("");
-  // const [done, setDone] = useState("")
 
   const deleteTodo = (id) => {
-    const newTodos = todos.filter((t) => {
-      // 2
-      return t.id != id;
-    });
-
+    const newTodos = todos.filter((t) => t.id !== id);
     setTodos(newTodos);
   };
 
-  // const doneToDo = (id) => {
-  //   const doneList = done.filter((d) => {
-  //     // 2
-  //     return d.id != id;
-  //   });
-
-  //   setDone(doneList);
-  // }
+  const toggleDoneTodo = (id) => {
+    const newTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, done: !todo.done } : todo
+    );
+    setTodos(newTodos);
+  };
 
   const addNewTodo = () => {
     const newTodo = {
@@ -59,57 +51,68 @@ export default function App() {
       title: text,
       done: false,
     };
-
-    const newTodos = [...todos];
-    newTodos.push(newTodo);
+    const newTodos = [...todos, newTodo];
     setTodos(newTodos);
+    setText("");
   };
+
+  const doneTodos = todos.filter((todo) => todo.done);
 
   return (
     <div className="App">
-      <h1></h1>
-
+      <h1>To-Do App</h1>
       <div>
-        <input type="text" onChange={(event) => setText(event.target.value)} />
-        <button disabled={text == ""} onClick={addNewTodo}>
+        <input
+          type="text"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+        />
+        <button  style={{
+          fontWeight:"bold",
+          color:"#000"
+          
+        }} disabled={text === ""} onClick={addNewTodo}>
           +
         </button>
       </div>
-
       <div>
         <h1>Tasks to do - {todos.length > 0 ? todos.length : "Empty"}</h1>
-
-
         <ul>
-          {todos.map((t) => {
-
-            return (
+          {todos
+            .filter((t) => !t.done)
+            .map((t) => (
               <li key={t.id}>
                 <span>{t.title}</span>
-               <div>
-                {/* <img src="./src/assets/tickBtn.svg" alt="tickBUtton" onClick={() => doneToDo(t.id)} /> */}
-                <img src="./src/assets/deleteBtn.svg" alt="delBUtton" onClick={() => deleteTodo(t.id)} />
-               </div>
+                <div>
+                  <img
+                    src="./src/assets/tickBtn.svg"
+                    alt="tickButton"
+                    onClick={() => toggleDoneTodo(t.id)}
+                  />
+                  <img
+                    src="./src/assets/deleteBtn.svg"
+                    alt="delButton"
+                    onClick={() => deleteTodo(t.id)}
+                  />
+                </div>
               </li>
-            );
-
-          })}
+            ))}
         </ul>
+      </div>
+      <div>
 
-        {/* <ul>
-          {todos.map((t) => {
-
-            return (
-              <li key={t.id}>
-                <span>{t.title}</span>
-              <div>
-                <img src="./src/assets/deleteBtn.svg" alt="delBUtton" onClick={() => deleteTodo(t.id)} />
-              </div>
+        <h1>Completed Tasks: </h1>
+        <ul>
+          { doneTodos.map((t) => (
+              <li  key={t.id}>
+                <span style={{
+                  color:"#228b22",
+                  textDecorationLine:"line-through"
+                  }}>{t.title}</span>
+                <button style={{}} onClick={() => toggleDoneTodo(t.id)}>Undo</button>
               </li>
-            );
-
-          })}
-        </ul> */}
+            ))}
+        </ul>
       </div>
     </div>
   );
